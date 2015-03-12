@@ -1,0 +1,31 @@
+{
+  "name": "NetSim",
+  "version": "1.0.0",
+  "description": "Basic Network Simulator for Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brollb/netsim.git"
+  },
+  "keywords": [
+    "network",
+    "simulator",
+    "javascript"
+  ],
+  "author": "Brian Broll",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brollb/netsim/issues"
+  },
+  "homepage": "https://github.com/brollb/netsim",
+  "main": "src/NetworkSimulator.js",
+  "dependencies": {
+    "simjs": "https://github.com/brollb/simjs/tarball/master"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.1"
+  }
+}
