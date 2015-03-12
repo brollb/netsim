@@ -8,12 +8,20 @@
 
 var Sim = require('simjs');
 
-var NetworkSimulator = function() {
+/**
+ * @constructor
+ *
+ * @param [network] - network topology
+ * @return {undefined}
+ */
+var NetworkSimulator = function(network) {
+    this.sim = new Sim();
 };
 
 /**
  * Load a network topology.
  *
+ * @param {Array} network - network topology
  * @return {undefined}
  */
 NetworkSimulator.prototype.loadNetwork = function(network) {
@@ -33,6 +41,7 @@ NetworkSimulator.prototype.addNode = function(node) {
     // Add a node to the simulation. It should have a uuid which is present
     // somewhere in the network topology
     // TODO
+    return this.sim.addEntity(node);
 };
 
 /**
@@ -42,7 +51,7 @@ NetworkSimulator.prototype.addNode = function(node) {
  */
 NetworkSimulator.prototype.start = function() {
     // Start the simulation
-    // TODO
+    this.sim.simulate();
 };
 
 module.exports = NetworkSimulator;
