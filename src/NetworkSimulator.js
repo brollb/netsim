@@ -6,7 +6,8 @@
 
 'use strict';
 
-var Sim = require('simjs');
+var Sim = require('simjs'),
+    App = require('./App');
 
 /**
  * @constructor
@@ -16,18 +17,7 @@ var Sim = require('simjs');
  */
 var NetworkSimulator = function(network) {
     this.sim = new Sim();
-};
-
-/**
- * Load a network topology.
- *
- * @param {Array} network - network topology
- * @return {undefined}
- */
-NetworkSimulator.prototype.loadNetwork = function(network) {
-    // nodes in the network will be given a uuid which associates them to
-    // the entities in the simulation
-    // TODO
+    this.network = network;
 };
 
 /**
@@ -38,10 +28,63 @@ NetworkSimulator.prototype.loadNetwork = function(network) {
  * @return {undefined}
  */
 NetworkSimulator.prototype.addNode = function(node) {
-    // Add a node to the simulation. It should have a uuid which is present
-    // somewhere in the network topology
+    this._validateNode(node);
+
+    // Guarrantee that it has a start function
+    var app = new App(node, this);
+    // Add sendMessage, _sendMessage function
+    // Decorate node with necessary functions
+
+    // Guarrantee that it has a start function
+
     // TODO
-    return this.sim.addEntity(node);
+
+    return this.sim.addEntity(app);
+};
+
+/**
+ * Check that the node has the proper structure.
+ *
+ * @throws {InvalidNodeException}
+ * @param {Object} node
+ * @return {undefined}
+ */
+NetworkSimulator.prototype._validateNode = function(node) {
+    // Node must:
+    //    + have a id
+    //    + be in the network topology
+    //    + not have "sent" method -- will be overridden
+    var isValid = true;
+
+    isValid = node.id !== undefined &&
+              this._networkContains(node) && 
+              node.send === undefined;
+
+    if (!isValid) {
+        throw new Error('Invalid node:', node);
+    }
+};
+
+/**
+ * Check if the network topology contains the given node
+ *
+ * @private
+ * @param {App} node
+ * @return {boolean}
+ */
+NetworkSimulator.prototype._networkContains = function(node) {
+    var exists = false,
+        link,
+        i = this.network.length;
+
+    while (!exists && i--) {
+        link = this.network[i];
+        exists = link.src === node.id || link.dst === node.id;
+    }
+
+    //console.log('network contains '+node.id+'? '+exists);
+
+    return exists;
 };
 
 /**
@@ -51,7 +94,18 @@ NetworkSimulator.prototype.addNode = function(node) {
  */
 NetworkSimulator.prototype.start = function() {
     // Start the simulation
+    // Convert all remaining nodes in the topology to dumb routers
     this.sim.simulate();
+};
+
+NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
+    // FIXME: set a variable latency
+    return 10;
+};
+
+NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
+    // FIXME: 
+    return false;
 };
 
 module.exports = NetworkSimulator;
