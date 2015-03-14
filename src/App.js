@@ -21,7 +21,7 @@ var App = function(node, simulator) {
     Utils.guaranteeFns(this, 'start', 'onMessageReceived');
 
     // This is an unfortunate coupling
-    this.sim = simulator;
+    this.netsim = simulator;
 };
 
 /**
@@ -32,7 +32,7 @@ var App = function(node, simulator) {
  * @return {undefined}
  */
 App.prototype.sendMessage = function(dstId, msg) {
-    var internalMsg = {route: Utils.getRoute(this.id, dstId),
+    var internalMsg = {route: this.netsim.getRoute(this.id, dstId),
                        body: msg};
 
     this._sendMessage(internalMsg);
@@ -48,8 +48,8 @@ App.prototype.sendMessage = function(dstId, msg) {
  */
 App.prototype._sendMessage = function(msg) {
     var nextNode = msg.route.unshift(),
-        latency = this.sim.getLatency(this.id, nextNode),
-        isDropped = this.sim.isDropped(this.id, nextNode);
+        latency = this.netsim.getLatency(this.id, nextNode),
+        isDropped = this.netsim.isDropped(this.id, nextNode);
 
     if (!isDropped) {
         this.send(msg, latency, nextNode);
