@@ -19,7 +19,7 @@ describe('Network Simulator Tests', function() {
             var node = {};
             assert.throws(function() {
                 netsim.addNode(node);
-            }, /Invalid/);
+            }, /Invalid node/);
         });
 
         it('should not add missing nodes', function() {
@@ -35,21 +35,44 @@ describe('Network Simulator Tests', function() {
 
             netsim.addNode(node);
         });
-    });
+    //});
 
-    describe('Communication Tests', function() {
-        it('should pass a message between two nodes', function() {
-            // TODO
-            assert(false, 'Need to write test');
+    //describe('Communication Tests', function() {
+        it.skip('should pass a message between two nodes', function() {
+            var receivedMsg = false,
+                n1 = {id: 'node1',
+                      onMessageReceived: function() {
+                          console.log('Received message!');
+                          receivedMsg = true;
+                      }
+                     },
+                n2 = {id: 'node1',
+                      start: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      },
+                      onMessageReceived: function() {
+                          receivedMsg = true;
+                      }
+                };
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.simulate();
+
+            // TODO Add message passing
         });
 
-        it('should pass a message through a router', function() {
+        it.skip('should pass a message through a router', function() {
             // TODO
             assert(false, 'Need to write test');
         });
     });
 
     describe('Network Topology Tests', function() {
+        //it('should turn all remaining nodes to routers', function() {
+            // TODO
+
+        //});
         // TODO: Latency
         // TODO: Packet loss
     });
