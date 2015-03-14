@@ -92,7 +92,7 @@ NetworkSimulator.prototype._networkContains = function(node) {
  *
  * @return {undefined}
  */
-NetworkSimulator.prototype.start = function() {
+NetworkSimulator.prototype.simulate = function() {
     // Start the simulation
     // Convert all remaining nodes in the topology to dumb routers
     this.sim.simulate();
@@ -106,6 +106,11 @@ NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
 NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
     // FIXME: 
     return false;
+};
+
+NetworkSimulator.prototype.getRoute = function(srcId, dstId) {
+    // FIXME: Add actual routing
+    return [];
 };
 
 module.exports = NetworkSimulator;
