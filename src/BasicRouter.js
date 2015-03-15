@@ -3,6 +3,9 @@
  * nodes
  */
 
+'use strict';
+var Utils = require('./Utils');
+
 var BasicRouter = function(network) {
     this._updateRoutes(network);
 };
@@ -19,7 +22,7 @@ BasicRouter.prototype.getRoute = function(src, dst) {
  * @return {undefined}
  */
 BasicRouter.prototype._updateRoutes = function(network) {
-    var nodes = this._getNodes(network),
+    var nodes = Utils.getNetworkGraph(network),
         ids = Object.keys(nodes),
         visited,
         current,
@@ -60,39 +63,6 @@ BasicRouter.prototype._updateRoutes = function(network) {
     }
 
     return this._routes = routes;
-};
-
-/**
- * Retrieve all node ids from a network configuration.
- *
- * @private
- * @param network
- * @return {Array} nodes
- */
-BasicRouter.prototype._getNodes = function(network) {
-    var nodes = {},
-        edge;
-
-    for (var i = network.length; i--;) {
-        edge = network[i];
-
-        this._addNodes(nodes, edge.src, edge.dst);
-
-        nodes[edge.src].push(edge.dst);
-        nodes[edge.dst].push(edge.src);
-    }
-
-    return nodes;
-};
-
-BasicRouter.prototype._addNodes = function(nodes, id1, id2) {
-    var node;
-    for (var i = arguments.length-1; i > 0; i--) {
-        node = arguments[i];
-        if (!nodes[node]) {
-            nodes[node] = [];
-        }
-    }
 };
 
 module.exports = BasicRouter;

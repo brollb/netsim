@@ -42,7 +42,41 @@ var copyObject = function(dst, src) {
     return dst;
 };
 
+var addNodes = function(nodes, id1, id2) {
+    var node;
+    for (var i = arguments.length-1; i > 0; i--) {
+        node = arguments[i];
+        if (!nodes[node]) {
+            nodes[node] = [];
+        }
+    }
+};
+
+/**
+ * Retrieve all node ids from a network configuration.
+ *
+ * @private
+ * @param network
+ * @return {Array} nodes
+ */
+var getNetworkGraph = function(network) {
+    var nodes = {},
+        edge;
+
+    for (var i = network.length; i--;) {
+        edge = network[i];
+
+        addNodes(nodes, edge.src, edge.dst);
+
+        nodes[edge.src].push(edge.dst);
+        nodes[edge.dst].push(edge.src);
+    }
+
+    return nodes;
+};
+
 module.exports = {
+    getNetworkGraph: getNetworkGraph,
     guaranteeFns: guaranteeFns,
     copyObject: copyObject
 };

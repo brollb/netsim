@@ -19,7 +19,7 @@ var App = function(node, simulator) {
     Utils.copyObject(this, node);
 
     // Guarrantee that it has the necessary functions
-    Utils.guaranteeFns(this, 'start', 'onMessageReceived');
+    Utils.guaranteeFns(this, 'start', 'onStart', 'onMessageReceived');
 
     // This is an unfortunate coupling
     this.netsim = simulator;
@@ -43,7 +43,6 @@ App.prototype.sendMessage = function(dstId, msg) {
  * Internal sendMessage function. This is called during the intermediate hops.
  *
  * @private
- * @param dstId
  * @param msg
  * @return {undefined}
  */
@@ -58,11 +57,12 @@ App.prototype._sendMessage = function(msg) {
 };
 
 /**
- * Callback used by SimJS on event message received. Determine if it should
- * be passed on or passed to the user defined app.
+ * Callback for any receiving all messages. This method will either forward 
+ * the message or pass it to it's own callback (depending on the intended
+ * recipient).
  *
- * @param {Function} fn
- * @return {App} this
+ * @private
+ * @return {undefined}
  */
 App.prototype.onMessage = function(sender, msg) {
     var isMyMsg = msg.route.length === 0;
@@ -70,7 +70,7 @@ App.prototype.onMessage = function(sender, msg) {
     // Check if the message has reached it's destination
     if (isMyMsg) {
         // If so, call onMessageReceived passing the body of the msg
-        this.onMessageReceived(sender, msg.body);
+        this.onMessageReceived(sender.uuid, msg.body);
     } else {
         // Else, get the next destination node and pass it along
         this._sendMessage(msg);

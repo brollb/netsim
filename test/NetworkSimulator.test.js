@@ -44,7 +44,7 @@ describe('Network Simulator Tests', function() {
             netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,
                 n1 = {uuid: 'node1',
-                      onMessageReceived: function() {
+                      onMessageReceived: function(sender) {
                           receivedMsg = true;
                       }
                      },
@@ -59,6 +59,31 @@ describe('Network Simulator Tests', function() {
 
             netsim.addNode(n1);
             netsim.addNode(n2);
+            netsim.simulate();
+
+            assert(receivedMsg, 
+                'Node did not receive the message from initial node');
+        });
+
+        it('should pass a message between two nodes regardless of order', function() {
+            netsim = new NetworkSimulator(k2Topology);
+            var receivedMsg = false,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(sender) {
+                          receivedMsg = true;
+                      }
+                     },
+                n2 = {uuid: 'node2',
+                      onStart: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      },
+                      onMessageReceived: function() {
+                          receivedMsg = true;
+                      }
+                };
+
+            netsim.addNode(n2);
+            netsim.addNode(n1);
             netsim.simulate();
 
             assert(receivedMsg, 
@@ -93,6 +118,29 @@ describe('Network Simulator Tests', function() {
 
             assert(receivedMsg === 2, 
                 'Message did not pass to node3 through router ('+receivedMsg+')');
+        });
+
+        it('should convert unlabeled apps to routers', function() {
+            var receivedMsg = false,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(msg) {
+                          receivedMsg = true;
+                      }
+                     },
+                n3 = {uuid: 'node3',
+                      onStart: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      }
+                };
+
+            netsim = new NetworkSimulator(p3Topology);
+
+            netsim.addNode(n1);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            assert(receivedMsg === true, 
+                'Node did not receive message!');
         });
     });
 

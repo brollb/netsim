@@ -8,7 +8,8 @@
 
 var Sim = require('simjs'),
     BasicRouter = require('./BasicRouter'),
-    App = require('./App');
+    App = require('./App'),
+    Utils = require('./Utils');
 
 /**
  * @constructor
@@ -91,9 +92,37 @@ NetworkSimulator.prototype._networkContains = function(node) {
  * @return {undefined}
  */
 NetworkSimulator.prototype.simulate = function() {
-    // Start the simulation
     // Convert all remaining nodes in the topology to dumb routers
+    this._convertRemainingApps();
+
+    this._callOnStartForApps();
+
+    // Start the simulation
     this.sim.simulate();
+};
+
+NetworkSimulator.prototype._callOnStartForApps = function() {
+    var ids = Object.keys(this.apps);
+    for (var i = ids.length; i--;) {
+        this.apps[ids[i]].onStart();
+    }
+};
+
+/**
+ * Convert remaining apps to dumb routing apps.
+ *
+ * @return {undefined}
+ */
+NetworkSimulator.prototype._convertRemainingApps = function() {
+    var nodeIds = Object.keys(Utils.getNetworkGraph(this.network)),
+        app;
+
+    // Add the routers first
+    for (var i = nodeIds.length; i--;) {
+        if (!this.apps[nodeIds[i]]) {
+            this.addNode({uuid: nodeIds[i]});
+        }
+    }
 };
 
 NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
