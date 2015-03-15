@@ -10,7 +10,8 @@ var Utils = require('./Utils');
  * App
  *
  * @constructor
- * @param {String} id
+ * @param {Object} node
+ * @param {NetworkSimulator} simulator
  * @return {undefined}
  */
 var App = function(node, simulator) {
@@ -32,7 +33,7 @@ var App = function(node, simulator) {
  * @return {undefined}
  */
 App.prototype.sendMessage = function(dstId, msg) {
-    var internalMsg = {route: this.netsim.getRoute(this.id, dstId),
+    var internalMsg = {route: this.netsim.getRoute(this.uuid, dstId),
                        body: msg};
 
     this._sendMessage(internalMsg);
@@ -48,8 +49,8 @@ App.prototype.sendMessage = function(dstId, msg) {
  */
 App.prototype._sendMessage = function(msg) {
     var nextNode = msg.route.shift(),
-        latency = this.netsim.getLatency(this.id, nextNode),
-        isDropped = this.netsim.isDropped(this.id, nextNode);
+        latency = this.netsim.getLatency(this.uuid, nextNode),
+        isDropped = this.netsim.isDropped(this.uuid, nextNode);
 
     if (!isDropped && !!nextNode) {
         this.send(msg, latency, nextNode);
@@ -69,7 +70,7 @@ App.prototype.onMessage = function(sender, msg) {
     // Check if the message has reached it's destination
     if (isMyMsg) {
         // If so, call onMessageReceived passing the body of the msg
-        this.onMessageReceived(sender, msg);
+        this.onMessageReceived(sender, msg.body);
     } else {
         // Else, get the next destination node and pass it along
         this._sendMessage(msg);

@@ -4,7 +4,9 @@
  */
 'use strict';
 var NetworkSimulator = require('../src/NetworkSimulator'),
-    basicTopology = require('./basic_top'),
+    App = require('../src/App'),
+    k2Topology = require('./basic_top'),  // clique of size 2
+    p3Topology = require('./p3_top'),  // path of length 3
     assert = require('assert');
 
 describe('Network Simulator Tests', function() {
@@ -12,10 +14,10 @@ describe('Network Simulator Tests', function() {
 
     describe('Node Creation Tests', function() {
         beforeEach(function() {
-            netsim = new NetworkSimulator(basicTopology);
+            netsim = new NetworkSimulator(k2Topology);
         });
 
-        it('should not add node without id', function() {
+        it('should not add node without uuid', function() {
             var node = {};
             assert.throws(function() {
                 netsim.addNode(node);
@@ -23,7 +25,7 @@ describe('Network Simulator Tests', function() {
         });
 
         it('should not add missing nodes', function() {
-            var node = {id: 'asdfasdf'};
+            var node = {uuid: 'asdfasdf'};
             assert.throws(function() {
                 netsim.addNode(node);
             }, Error);
@@ -31,22 +33,22 @@ describe('Network Simulator Tests', function() {
 
         it('should add node to network', function() {
             var started = false,
-            node = {id: 'node2'};
+            node = {uuid: 'node2'};
 
             netsim.addNode(node);
         });
-    //});
+    });
 
-    //describe('Communication Tests', function() {
+    describe('Communication Tests', function() {
         it('should pass a message between two nodes', function() {
+            netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,
-                n1 = {id: 'node1',
+                n1 = {uuid: 'node1',
                       onMessageReceived: function() {
-                          console.log('Received message!');
                           receivedMsg = true;
                       }
                      },
-                n2 = {id: 'node1',
+                n2 = {uuid: 'node2',
                       start: function() {
                           this.sendMessage('node1', 'Hello World');
                       },
@@ -63,9 +65,34 @@ describe('Network Simulator Tests', function() {
                 'Node did not receive the message from initial node');
         });
 
-        it.skip('should pass a message through a router', function() {
-            // TODO
-            assert(false, 'Need to write test');
+        it('should pass a message through a router', function() {
+            var receivedMsg = 0,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(msg) {
+                          receivedMsg++;
+                      }
+                     },
+                n2 = {uuid: 'node2',
+                      onMessage: function(sender, msg) {
+                          receivedMsg++;
+                          App.prototype.onMessage.call(this, sender, msg);
+                      }
+                },
+                n3 = {uuid: 'node3',
+                      start: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      }
+                };
+
+            netsim = new NetworkSimulator(p3Topology);
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            assert(receivedMsg === 2, 
+                'Message did not pass to node3 through router ('+receivedMsg+')');
         });
     });
 

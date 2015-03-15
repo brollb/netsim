@@ -7,6 +7,7 @@
 'use strict';
 
 var Sim = require('simjs'),
+    BasicRouter = require('./BasicRouter'),
     App = require('./App');
 
 /**
@@ -18,6 +19,7 @@ var Sim = require('simjs'),
 var NetworkSimulator = function(network) {
     this.sim = new Sim();
     this.network = network;
+    this.router = new BasicRouter(network);
     this.apps = {};
 };
 
@@ -35,7 +37,7 @@ NetworkSimulator.prototype.addNode = function(node) {
     var app = new App(node, this);
 
     // Record the app
-    this.apps[app.id] = app;
+    this.apps[app.uuid] = app;
 
     return this.sim.addEntity(app);
 };
@@ -49,12 +51,12 @@ NetworkSimulator.prototype.addNode = function(node) {
  */
 NetworkSimulator.prototype._validateNode = function(node) {
     // Node must:
-    //    + have a id
+    //    + have a uuid
     //    + be in the network topology
     //    + not have "sent" method -- will be overridden
     var isValid = true;
 
-    isValid = node.id !== undefined &&
+    isValid = node.uuid !== undefined &&
               this._networkContains(node) && 
               node.send === undefined;
 
@@ -77,10 +79,8 @@ NetworkSimulator.prototype._networkContains = function(node) {
 
     while (!exists && i--) {
         link = this.network[i];
-        exists = link.src === node.id || link.dst === node.id;
+        exists = link.src === node.uuid || link.dst === node.uuid;
     }
-
-    //console.log('network contains '+node.id+'? '+exists);
 
     return exists;
 };
@@ -107,8 +107,14 @@ NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
 };
 
 NetworkSimulator.prototype.getRoute = function(srcId, dstId) {
-    // FIXME: Add actual routing
-    return [this.apps[dstId]];
+    var route = this.router.getRoute(srcId, dstId);
+
+    // Replace ids with actual nodes
+    for (var i = route.length; i--;) {
+        route[i] = this.apps[route[i]];
+    }
+
+    return route;
 };
 
 module.exports = NetworkSimulator;
