@@ -47,11 +47,11 @@ App.prototype.sendMessage = function(dstId, msg) {
  * @return {undefined}
  */
 App.prototype._sendMessage = function(msg) {
-    var nextNode = msg.route.unshift(),
+    var nextNode = msg.route.shift(),
         latency = this.netsim.getLatency(this.id, nextNode),
         isDropped = this.netsim.isDropped(this.id, nextNode);
 
-    if (!isDropped) {
+    if (!isDropped && !!nextNode) {
         this.send(msg, latency, nextNode);
     }
 };
@@ -64,7 +64,7 @@ App.prototype._sendMessage = function(msg) {
  * @return {App} this
  */
 App.prototype.onMessage = function(sender, msg) {
-    var isMyMsg = msg.route.length === [];
+    var isMyMsg = msg.route.length === 0;
 
     // Check if the message has reached it's destination
     if (isMyMsg) {

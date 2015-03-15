@@ -18,10 +18,11 @@ var Sim = require('simjs'),
 var NetworkSimulator = function(network) {
     this.sim = new Sim();
     this.network = network;
+    this.apps = {};
 };
 
 /**
- * Add a node to the network. UUID of the node should be present in the 
+ * Add a node to the network. Id of the node should be present in the 
  * network topology.
  *
  * @param node
@@ -32,12 +33,9 @@ NetworkSimulator.prototype.addNode = function(node) {
 
     // Guarrantee that it has a start function
     var app = new App(node, this);
-    // Add sendMessage, _sendMessage function
-    // Decorate node with necessary functions
 
-    // Guarrantee that it has a start function
-
-    // TODO
+    // Record the app
+    this.apps[app.id] = app;
 
     return this.sim.addEntity(app);
 };
@@ -110,7 +108,7 @@ NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
 
 NetworkSimulator.prototype.getRoute = function(srcId, dstId) {
     // FIXME: Add actual routing
-    return [];
+    return [this.apps[dstId]];
 };
 
 module.exports = NetworkSimulator;

@@ -38,7 +38,7 @@ describe('Network Simulator Tests', function() {
     //});
 
     //describe('Communication Tests', function() {
-        it.skip('should pass a message between two nodes', function() {
+        it('should pass a message between two nodes', function() {
             var receivedMsg = false,
                 n1 = {id: 'node1',
                       onMessageReceived: function() {
@@ -59,7 +59,8 @@ describe('Network Simulator Tests', function() {
             netsim.addNode(n2);
             netsim.simulate();
 
-            // TODO Add message passing
+            assert(receivedMsg, 
+                'Node did not receive the message from initial node');
         });
 
         it.skip('should pass a message through a router', function() {
