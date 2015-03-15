@@ -35,9 +35,8 @@ var nop = function() {
  * @return {Object} dst
  */
 var copyObject = function(dst, src) {
-    var keys = Object.keys(src);
-    for (var i = keys.length; i--;) {
-        dst[keys[i]] = src[keys[i]];
+    for (var key in src) {
+        dst[key] = src[key];
     }
     return dst;
 };
