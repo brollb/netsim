@@ -5,8 +5,8 @@
 'use strict';
 var NetworkSimulator = require('../src/NetworkSimulator'),
     App = require('../src/App'),
-    k2Topology = require('./basic_top'),  // clique of size 2
-    p3Topology = require('./p3_top'),  // path of length 3
+    k2Topology = require('./networks/basic_top'),  // clique of size 2
+    p3Topology = require('./networks/p3_top'),  // path of length 3
     assert = require('assert');
 
 describe('Network Simulator Tests', function() {
@@ -142,18 +142,14 @@ describe('Network Simulator Tests', function() {
             assert(receivedMsg === true, 
                 'Node did not receive message!');
         });
+
     });
 
     describe('Network Topology Tests', function() {
-        //it('should turn all remaining nodes to routers', function() {
-            // TODO
-
-        //});
         // TODO: Latency
         // TODO: Packet loss
     });
 
-    // TODO: Running Simulation
     // TODO: Getting results?
 
 });
