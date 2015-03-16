@@ -11,7 +11,8 @@ var NetworkSimulator = require('../src/NetworkSimulator'),
     k2Topology = require('./networks/basic_top'),  // clique of size 2
     p3Topology = require('./networks/p3_top'),  // path of length 3
     lossyNetwork = require('./networks/lossy_net'),
-    slowNetwork = require('./networks/slow_net');
+    slowNetwork = require('./networks/slow_net'),
+    unreliableNetwork = require('./networks/unreliable_net');
 
 describe('Network Simulator Tests', function() {
     var netsim;
@@ -208,6 +209,32 @@ describe('Network Simulator Tests', function() {
             }
 
             
+        });
+
+        it('unreliable latency networks should have varied delivery times', function() {
+            var endTime,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(msg) {
+                          endTime = this.time();
+                      }
+                     },
+                n3 = {uuid: 'node3',
+                      onStart: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      }
+                };
+
+            netsim = new NetworkSimulator(unreliableNetwork, 100);
+
+            // Check the BasicRouter's routes
+            netsim.addNode(n1);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            var diff = Math.abs(200-endTime);
+            assert(diff > 10, 
+                'Message was not varied ('+diff+')');
+
         });
 
         it('high latency network should delay packets', function() {
