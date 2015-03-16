@@ -224,7 +224,7 @@ describe('Network Simulator Tests', function() {
                       }
                 };
 
-            netsim = new NetworkSimulator(unreliableNetwork, 100);
+            netsim = new NetworkSimulator(unreliableNetwork);
 
             // Check the BasicRouter's routes
             netsim.addNode(n1);
