@@ -19,7 +19,12 @@ var Sim = require('simjs'),
  */
 var NetworkSimulator = function(network) {
     this.sim = new Sim();
+
+    // Record the network
     this.network = network;
+    // Store edges
+    // TODO
+
     this.router = new BasicRouter(network);
     this.apps = {};
 };
@@ -136,7 +141,7 @@ NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
 };
 
 NetworkSimulator.prototype.getRoute = function(srcId, dstId) {
-    var route = this.router.getRoute(srcId, dstId);
+    var route = this.router.getRoute(srcId, dstId).slice();
 
     // Replace ids with actual nodes
     for (var i = route.length; i--;) {

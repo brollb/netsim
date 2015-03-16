@@ -4,10 +4,12 @@
  */
 'use strict';
 var NetworkSimulator = require('../src/NetworkSimulator'),
+    Utils = require('../src/Utils'),
     App = require('../src/App'),
     k2Topology = require('./networks/basic_top'),  // clique of size 2
     p3Topology = require('./networks/p3_top'),  // path of length 3
-    assert = require('assert');
+    assert = require('assert'),
+    lossyNetwork = require('./networks/lossy_net');
 
 describe('Network Simulator Tests', function() {
     var netsim;
@@ -40,6 +42,31 @@ describe('Network Simulator Tests', function() {
     });
 
     describe('Communication Tests', function() {
+        it('should send multiple messages between two nodes', function() {
+            netsim = new NetworkSimulator(k2Topology);
+            var receivedCount = 0,
+                total = 2,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(sender) {
+                          receivedCount++;
+                      }
+                     },
+                n2 = {uuid: 'node2',
+                      onStart: function() {
+                          for (var i = total; i--;) {
+                              this.sendMessage('node1', 'Hello World');
+                          }
+                      }
+                };
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.simulate();
+
+            assert(receivedCount === total, 
+                'Node did not receive both messages from initial node');
+        });
+
         it('should pass a message between two nodes', function() {
             netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,
@@ -143,11 +170,57 @@ describe('Network Simulator Tests', function() {
                 'Node did not receive message!');
         });
 
+        it('should find routes', function() {
+            netsim = new NetworkSimulator(lossyNetwork);
+            // Check that it has all routes
+            var nodeIds = Object.keys(Utils.getNetworkGraph(lossyNetwork)),
+                route;
+
+            for (var i = nodeIds.length; i--;) {
+                for (var j = i-1; j >= 0; j--) {
+                    route = netsim.getRoute(nodeIds[i], nodeIds[j]);
+                    assert(route.length > 0, 
+                        'No route for '+nodeIds[i]+' to '+nodeIds[j]);
+
+                    route = netsim.getRoute(nodeIds[j], nodeIds[i]);
+                    assert(route.length > 0, 
+                        'No route for '+nodeIds[j]+' to '+nodeIds[i]);
+                }
+            }
+        });
+
     });
 
     describe('Network Topology Tests', function() {
         // TODO: Latency
         // TODO: Packet loss
+        it.skip('lossy network should drop packets', function() {
+            var receivedCount = 0,
+                total = 100,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(msg) {
+                          receivedCount++;
+                      }
+                     },
+                n3 = {uuid: 'node3',
+                      onStart: function() {
+                          for (var i = total; i--;) {
+                              this.sendMessage('node1', 'Hello World');
+                          }
+                      }
+                };
+
+            netsim = new NetworkSimulator(lossyNetwork);
+
+            // Check the BasicRouter's routes
+            netsim.addNode(n1);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            assert(receivedCount < total, 
+                'No packets were dropped');
+        });
+
     });
 
     // TODO: Getting results?

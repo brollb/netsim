@@ -5,6 +5,6 @@
 'use strict';
 
 module.exports = [
-    {src: 'node1', dst: 'node2'},
-    {src: 'node2', dst: 'node3'}
+    {src: 'node1', dst: 'node2', packet_loss: 0.9},
+    {src: 'node2', dst: 'node3', packet_loss: 0.5}
 ];
