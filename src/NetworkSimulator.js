@@ -7,7 +7,7 @@
 'use strict';
 
 var Sim = require('simjs'),
-    Random = require('randomjs'),
+    normalRandom = require('gauss-random'),
     BasicRouter = require('./BasicRouter'),
     App = require('./App'),
     Utils = require('./Utils');
@@ -18,16 +18,14 @@ var Sim = require('simjs'),
  * @param [network] - network topology
  * @return {undefined}
  */
-var NetworkSimulator = function(network, seed) {
+var NetworkSimulator = function(network) {
     this.sim = new Sim();
 
     // Record the network
     this.network = network;
     // Store edges
     this._storeEdges(network);
-    // TODO
 
-    this.random = new Random(seed || new Date().getTime());
     this.router = new BasicRouter(network);
     this.apps = {};
 };
@@ -175,7 +173,7 @@ NetworkSimulator.prototype._convertRemainingApps = function() {
 NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
     var mean = this._edges[srcId][dstId].latencyMean || 10,
         sigma = this._edges[srcId][dstId].latencySigma || 0,
-        latency = this.random.normal(mean, sigma);
+        latency = normalRandom()*sigma+mean;
 
     return latency;
 };

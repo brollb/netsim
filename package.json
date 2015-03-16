@@ -2,7 +2,7 @@
   "name": "netsim",
   "version": "1.0.0",
   "description": "Basic Network Simulator for Javascript",
-  "main": "main.js",
+  "main": "src/NetworkSimulator.js",
   "scripts": {
     "test": "mocha test/"
   },
@@ -21,8 +21,8 @@
     "url": "https://github.com/brollb/netsim/issues"
   },
   "homepage": "https://github.com/brollb/netsim",
-  "main": "src/NetworkSimulator.js",
   "dependencies": {
+    "gauss-random": "^1.0.1",
     "simjs": "https://github.com/brollb/simjs/tarball/master"
   },
   "devDependencies": {
