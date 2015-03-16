@@ -182,7 +182,7 @@ NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
 
 NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
     var edge = this._edges[srcId][dstId],
-        lossProbability = edge.packet_loss || 0;
+        lossProbability = edge.packetLoss || 0;
 
     return Math.random() < lossProbability;
 };
