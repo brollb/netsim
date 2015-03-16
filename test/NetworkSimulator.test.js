@@ -6,10 +6,12 @@
 var NetworkSimulator = require('../src/NetworkSimulator'),
     Utils = require('../src/Utils'),
     App = require('../src/App'),
+    assert = require('assert'),
+    // Network topologies
     k2Topology = require('./networks/basic_top'),  // clique of size 2
     p3Topology = require('./networks/p3_top'),  // path of length 3
-    assert = require('assert'),
-    lossyNetwork = require('./networks/lossy_net');
+    lossyNetwork = require('./networks/lossy_net'),
+    slowNetwork = require('./networks/slow_net');
 
 describe('Network Simulator Tests', function() {
     var netsim;
@@ -209,6 +211,31 @@ describe('Network Simulator Tests', function() {
         });
 
         // TODO: Latency
+        it.only('high latency network should delay packets', function() {
+            var endTime,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(msg) {
+                          endTime = this.time();
+                      }
+                     },
+                n3 = {uuid: 'node3',
+                      onStart: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      }
+                };
+
+            netsim = new NetworkSimulator(slowNetwork);
+
+            // Check the BasicRouter's routes
+            netsim.addNode(n1);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            assert(endTime > 100, 
+                'Message was not delayed ('+endTime+')');
+
+        });
+
         it('lossy network should drop packets', function() {
             var receivedCount = 0,
                 total = 100,

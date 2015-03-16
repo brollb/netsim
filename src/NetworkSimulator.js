@@ -7,6 +7,7 @@
 'use strict';
 
 var Sim = require('simjs'),
+    Random = require('randomjs'),
     BasicRouter = require('./BasicRouter'),
     App = require('./App'),
     Utils = require('./Utils');
@@ -17,7 +18,7 @@ var Sim = require('simjs'),
  * @param [network] - network topology
  * @return {undefined}
  */
-var NetworkSimulator = function(network) {
+var NetworkSimulator = function(network, seed) {
     this.sim = new Sim();
 
     // Record the network
@@ -25,6 +26,7 @@ var NetworkSimulator = function(network) {
     // Store edges
     // TODO
 
+    this.random = new Random(seed || new Date().getTime());
     this.router = new BasicRouter(network);
     this.apps = {};
 };
@@ -131,8 +133,11 @@ NetworkSimulator.prototype._convertRemainingApps = function() {
 };
 
 NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
-    // FIXME: set a variable latency
-    return 10;
+    var mean = this._edges[srcId][dstId].latencyMean || 10,
+        sigma = this._edges[srcId][dstId].latencySigma || 0,
+        latency = this.random.normal(mean, sigma);
+
+    return latency;
 };
 
 NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
