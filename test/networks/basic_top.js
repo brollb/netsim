@@ -5,5 +5,5 @@
 'use strict';
 
 module.exports = [
-    {src: 'node1', dst: 'node2', packet_loss: 0.5}
+    {src: 'node1', dst: 'node2'}
 ];

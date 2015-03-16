@@ -192,9 +192,24 @@ describe('Network Simulator Tests', function() {
     });
 
     describe('Network Topology Tests', function() {
+        it('should record edges in _edges', function() {
+            var edges = lossyNetwork,
+                src,
+                dst;
+
+            netsim = new NetworkSimulator(lossyNetwork);
+            for (var i = edges.length; i--;) {
+                src = edges[i].src;
+                dst = edges[i].dst;
+                assert(netsim._edges[src][dst] === edges[i]);
+                assert(netsim._edges[dst][src] === edges[i]);
+            }
+
+            
+        });
+
         // TODO: Latency
-        // TODO: Packet loss
-        it.skip('lossy network should drop packets', function() {
+        it('lossy network should drop packets', function() {
             var receivedCount = 0,
                 total = 100,
                 n1 = {uuid: 'node1',
