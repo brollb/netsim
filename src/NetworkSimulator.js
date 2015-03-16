@@ -24,11 +24,51 @@ var NetworkSimulator = function(network, seed) {
     // Record the network
     this.network = network;
     // Store edges
+    this._storeEdges(network);
     // TODO
 
     this.random = new Random(seed || new Date().getTime());
     this.router = new BasicRouter(network);
     this.apps = {};
+};
+
+/**
+ * Record the network edges by src/dst.
+ *
+ * @private
+ * @param {Array} edgeList
+ * @return {undefined}
+ */
+NetworkSimulator.prototype._storeEdges = function(edgeList) {
+    var edge,
+        edges = {};
+
+    for (var i = edgeList.length; i--;) {
+        edge = edgeList[i];
+        this._initEdgeRecords(edges, edge.src, edge.dst);
+
+        edges[edge.src][edge.dst] = edge;
+        edges[edge.dst][edge.src] = edge;
+    }
+
+    this._edges = edges;
+};
+
+/**
+ * Initialize edge records.
+ *
+ * @param {Object} object
+ * @param {String} param1
+ * @param {String} param2
+ * @return {Object} result
+ */
+NetworkSimulator.prototype._initEdgeRecords = function(object, param1, param2) {
+    for (var i = arguments.length; i > 0; i--) {
+        if (object[arguments[i]] === undefined) {
+            object[arguments[i]] = {};
+        }
+    }
+    return object;
 };
 
 /**
@@ -141,8 +181,10 @@ NetworkSimulator.prototype.getLatency = function(srcId, dstId) {
 };
 
 NetworkSimulator.prototype.isDropped = function(srcId, dstId) {
-    // FIXME: 
-    return false;
+    var edge = this._edges[srcId][dstId],
+        lossProbability = edge.packet_loss || 0;
+
+    return Math.random() < lossProbability;
 };
 
 NetworkSimulator.prototype.getRoute = function(srcId, dstId) {

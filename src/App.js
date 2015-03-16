@@ -48,8 +48,8 @@ App.prototype.sendMessage = function(dstId, msg) {
  */
 App.prototype._sendMessage = function(msg) {
     var nextNode = msg.route.shift(),
-        latency = this.netsim.getLatency(this.uuid, nextNode),
-        isDropped = this.netsim.isDropped(this.uuid, nextNode);
+        latency = this.netsim.getLatency(this.uuid, nextNode.uuid),
+        isDropped = this.netsim.isDropped(this.uuid, nextNode.uuid);
 
     if (!isDropped && !!nextNode) {
         this.send(msg, latency, nextNode);
