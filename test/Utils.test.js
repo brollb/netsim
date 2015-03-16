@@ -10,7 +10,6 @@ describe('Utils Tests', function() {
         it('should get all node ids', function() {
             var ids = Object.keys(Utils.getNetworkGraph(lossyNet)),
                 actualIds = ['node1', 'node2', 'node3'];
-            console.log('ids: ', ids);
 
             for (var i = actualIds.length; i--;) {
                 assert(ids.indexOf(actualIds[i]) !== -1, 
