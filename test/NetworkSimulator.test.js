@@ -210,8 +210,7 @@ describe('Network Simulator Tests', function() {
             
         });
 
-        // TODO: Latency
-        it.only('high latency network should delay packets', function() {
+        it('high latency network should delay packets', function() {
             var endTime,
                 n1 = {uuid: 'node1',
                       onMessageReceived: function(msg) {
