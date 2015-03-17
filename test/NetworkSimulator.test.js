@@ -120,6 +120,38 @@ describe('Network Simulator Tests', function() {
                 'Node did not receive the message from initial node');
         });
 
+        it('should send correct id to recipient', function() {
+            var receivedMsg = 0,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(id, msg) {
+                          assert(id === 'node3', 
+                              'Node recieved id of intermediate node');
+                          receivedMsg++;
+                      }
+                     },
+                n2 = {uuid: 'node2',
+                      onMessage: function(sender, msg) {
+                          receivedMsg++;
+                          App.prototype.onMessage.call(this, sender, msg);
+                      }
+                },
+                n3 = {uuid: 'node3',
+                      start: function() {
+                          this.sendMessage('node1', 'Hello World');
+                      }
+                };
+
+            netsim = new NetworkSimulator(p3Topology);
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.addNode(n3);
+            netsim.simulate();
+
+            assert(receivedMsg === 2, 
+                'Message did not pass to node3 through router ('+receivedMsg+')');
+        });
+
         it('should pass a message through a router', function() {
             var receivedMsg = 0,
                 n1 = {uuid: 'node1',

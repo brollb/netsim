@@ -34,6 +34,7 @@ var App = function(node, simulator) {
  */
 App.prototype.sendMessage = function(dstId, msg) {
     var internalMsg = {route: this.netsim.getRoute(this.uuid, dstId),
+                       origin: this.uuid,
                        body: msg};
 
     this._sendMessage(internalMsg);
@@ -70,7 +71,7 @@ App.prototype.onMessage = function(sender, msg) {
     // Check if the message has reached it's destination
     if (isMyMsg) {
         // If so, call onMessageReceived passing the body of the msg
-        this.onMessageReceived(sender.uuid, msg.body);
+        this.onMessageReceived(msg.origin, msg.body);
     } else {
         // Else, get the next destination node and pass it along
         this._sendMessage(msg);
