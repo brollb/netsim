@@ -7,11 +7,13 @@ var NetworkSimulator = require('../src/NetworkSimulator'),
     Utils = require('../src/Utils'),
     App = require('../src/App'),
     assert = require('assert'),
+
     // Network topologies
     k2Topology = require('./networks/basic_top'),  // clique of size 2
     p3Topology = require('./networks/p3_top'),  // path of length 3
     lossyNetwork = require('./networks/lossy_net'),
     slowNetwork = require('./networks/slow_net'),
+    p5Network = require('./networks/p5_net'),  // path of length 3
     unreliableNetwork = require('./networks/unreliable_net');
 
 describe('Network Simulator Tests', function() {
@@ -118,6 +120,35 @@ describe('Network Simulator Tests', function() {
 
             assert(receivedMsg, 
                 'Node did not receive the message from initial node');
+        });
+
+        it('should send msg to multiple recipients', function() {
+            var receivedMsgCount = 0,
+                n1 = {uuid: 'node1',
+                      onStart: function() {
+                          this.sendMessage(['node3', 'node5'], 'Hello World');
+                      }
+                     },
+                n3 = {uuid: 'node3',
+                      onMessageReceived: function() {
+                          receivedMsgCount++;
+                      }
+                },
+                n5 = {uuid: 'node5',
+                      onMessageReceived: function() {
+                          receivedMsgCount++;
+                      }
+                };
+
+            netsim = new NetworkSimulator(p5Network);
+
+            netsim.addNode(n1);
+            netsim.addNode(n3);
+            netsim.addNode(n5);
+            netsim.simulate();
+
+            assert(receivedMsgCount === 2, 
+                'Both nodes did not receive the message');
         });
 
         it('should send correct id to recipient', function() {

@@ -26,18 +26,28 @@ var App = function(node, simulator) {
 };
 
 /**
- * Send a message to another node in the system.
+ * Send a message to another node(s) in the system.
  *
- * @param {String} dstId
+ * @param {String|Array} dstId
  * @param msg
  * @return {undefined}
  */
-App.prototype.sendMessage = function(dstId, msg) {
-    var internalMsg = {route: this.netsim.getRoute(this.uuid, dstId),
+App.prototype.sendMessage = function(dstIds, msg) {
+    var internalMsg,
+        dstId;
+
+    if (!dstIds instanceof Array) {
+        dstIds = [dstIds];
+    }
+
+    for (var i = dstIds.length; i--;) {
+        dstId = dstIds[i];
+        internalMsg = {route: this.netsim.getRoute(this.uuid, dstId),
                        origin: this.uuid,
                        body: msg};
 
-    this._sendMessage(internalMsg);
+        this._sendMessage(internalMsg);
+    }
 };
 
 /**
