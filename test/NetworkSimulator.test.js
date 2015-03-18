@@ -47,30 +47,6 @@ describe('Network Simulator Tests', function() {
     });
 
     describe('Communication Tests', function() {
-        it('should send multiple messages between two nodes', function() {
-            netsim = new NetworkSimulator(k2Topology);
-            var receivedCount = 0,
-                total = 2,
-                n1 = {uuid: 'node1',
-                      onMessageReceived: function(sender) {
-                          receivedCount++;
-                      }
-                     },
-                n2 = {uuid: 'node2',
-                      onStart: function() {
-                          for (var i = total; i--;) {
-                              this.sendMessage('node1', 'Hello World');
-                          }
-                      }
-                };
-
-            netsim.addNode(n1);
-            netsim.addNode(n2);
-            netsim.simulate();
-
-            assert(receivedCount === total, 
-                'Node did not receive both messages from initial node');
-        });
 
         it('should pass a message between two nodes', function() {
             netsim = new NetworkSimulator(k2Topology);
@@ -97,6 +73,30 @@ describe('Network Simulator Tests', function() {
                 'Node did not receive the message from initial node');
         });
 
+        it('should send multiple messages between two nodes', function() {
+            netsim = new NetworkSimulator(k2Topology);
+            var receivedCount = 0,
+                total = 2,
+                n1 = {uuid: 'node1',
+                      onMessageReceived: function(sender) {
+                          receivedCount++;
+                      }
+                     },
+                n2 = {uuid: 'node2',
+                      onStart: function() {
+                          for (var i = total; i--;) {
+                              this.sendMessage('node1', 'Hello World');
+                          }
+                      }
+                };
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.simulate();
+
+            assert(receivedCount === total, 
+                'Node did not receive both messages from initial node');
+        });
         it('should pass a message between two nodes regardless of order', function() {
             netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,

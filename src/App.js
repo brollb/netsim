@@ -36,7 +36,7 @@ App.prototype.sendMessage = function(dstIds, msg) {
     var internalMsg,
         dstId;
 
-    if (!dstIds instanceof Array) {
+    if (!(dstIds instanceof Array)) {
         dstIds = [dstIds];
     }
 
