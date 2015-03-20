@@ -1,6 +1,6 @@
 {
   "name": "netsim",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Basic Network Simulator for Javascript",
   "main": "src/NetworkSimulator.js",
   "files": [
