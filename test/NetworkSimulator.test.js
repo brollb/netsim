@@ -48,6 +48,27 @@ describe('Network Simulator Tests', function() {
 
     describe('Communication Tests', function() {
 
+        it('should allow message passing to self', function() {
+            netsim = new NetworkSimulator(k2Topology);
+            var receivedMsg = false,
+                n1 = {uuid: 'node1'},
+                n2 = {uuid: 'node2',
+                      start: function() {
+                          this.sendMessage('node2', 'Hello World');
+                      },
+                      onMessageReceived: function() {
+                          receivedMsg = true;
+                      }
+                };
+
+            netsim.addNode(n1);
+            netsim.addNode(n2);
+            netsim.simulate();
+
+            assert(receivedMsg, 
+                'Node did not receive the message from initial node');
+        });
+
         it('should pass a message between two nodes', function() {
             netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,
@@ -97,6 +118,7 @@ describe('Network Simulator Tests', function() {
             assert(receivedCount === total, 
                 'Node did not receive both messages from initial node');
         });
+
         it('should pass a message between two nodes regardless of order', function() {
             netsim = new NetworkSimulator(k2Topology);
             var receivedMsg = false,

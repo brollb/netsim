@@ -39,14 +39,25 @@ var NetworkSimulator = function(network) {
  */
 NetworkSimulator.prototype._storeEdges = function(edgeList) {
     var edge,
-        edges = {};
+        nodes = {},
+        edges = {},
+        i;
 
-    for (var i = edgeList.length; i--;) {
+    for (i = edgeList.length; i--;) {
         edge = edgeList[i];
         this._initEdgeRecords(edges, edge.src, edge.dst);
 
         edges[edge.src][edge.dst] = edge;
         edges[edge.dst][edge.src] = edge;
+
+        nodes[edge.src] = true;
+        nodes[edge.dst] = true;
+    }
+
+    // Add self edges for every node
+    var ids = Object.keys(nodes);
+    for (i = ids.length; i--;) {
+        edges[ids[i]][ids[i]] = {};
     }
 
     this._edges = edges;
