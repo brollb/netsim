@@ -20,7 +20,7 @@ A network is simply a list of edges in the network where an edge is a Javascript
 Optionally, you can define `packetLoss`, `latencyMean` and `latencySigma` for each edge. `packetLoss` denotes the likelihood of a packet being dropped while `latencyMean` and `latencySigma` define the normal distribution defining the latency of the given edge.
 
 Example network definition:
-```
+```javascript
 [
 {src: 'node1', dst: 'node2'},
 {src: 'node2', dst: 'node3', packetLoss: 0.5},
@@ -34,7 +34,7 @@ All apps must have a `uuid`. The `uuid` corresponds to the given node in the net
 Along with a `uuid`, apps can optionally define `onStart` and `onMessageReceived` methods. `onStart` is a function to be called at the start of the simulation while `onMessageReceived` is the event handler for receiving messages.
 
 Example app:
-```
+```javascript
 node1 = netsim.addNode({uuid: 'node1',
                         onStart: function() {
                             this.sendMessage('node4', 'Marco!');
@@ -46,12 +46,12 @@ node1 = netsim.addNode({uuid: 'node1',
 
 ### Running the Simulation
 After defining the network, the simulation can be run with
-```
+```javascript
 netsim.simulate();
 ```
 
 ## Examples
-```
+```javascript
 var NetSim = require('netsim');
 var netsim = new NetSim(topology);
 
