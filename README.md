@@ -1,3 +1,6 @@
+[![Version](https://badge.fury.io/js/netsim.svg)](https://www.npmjs.com/package/netsim)
+[![Build Status](https://travis-ci.org/brollb/netsim.svg?branch=master)](https://travis-ci.org/brollb/netsim)
+
 # NetSim.JS
 
 NetSim is a network simulator for Javascript.
